@@ -16,7 +16,7 @@ import { user } from '@/api/user'
 const pageNum = ref(1)
 const pageSize = ref(5)
 const total = ref(0)
-const pageSizes = ref([1, 10, 20, 30])
+const pageSizes = ref([5, 10, 20, 30])
 const tableData = ref([])
 const newsData = ref([])
 
