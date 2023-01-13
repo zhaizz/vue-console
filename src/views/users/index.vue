@@ -40,7 +40,7 @@
       <el-table-column label="Operations">
         <template #default="scope">
           <el-button size="small" @click="openEdit(scope.row.id, scope.row.email, scope.row.mobile)">Edit</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">Delete</el-button>
+          <el-button size="small" text type="danger" @click="handleDelete(scope.row.id)">Delete</el-button>
           <!-- <el-button size="small" type="danger" @click="console.log(scope.row)">Delete</el-button> -->
         </template>
       </el-table-column>
@@ -124,7 +124,7 @@
 <script setup>
 import { ref } from 'vue'
 import { getUserList, addUser, delUser, editUser } from '@/api/user'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
 
 const pageNum = ref(1)
@@ -231,13 +231,32 @@ function search() {
 //   console.log(newsData.value)
 // }
 
-const handleDelete = async (id) => {
-  console.log()
-  await delUser(id)
-  ElMessage.success('删除成功')
-  userList()
+// const handleDelete = (id) => {
+//   open(id)
+// }
+const handleDelete = (id) => {
+  ElMessageBox.confirm(
+    '确认删除该用户吗？',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      center: true
+    }
+  )
+    .then(async () => {
+      await delUser(id)
+      userList()
+      ElMessage.success('删除成功')
+    })
+    .catch(() => {
+      ElMessage({
+        type: 'info',
+        message: 'Delete canceled'
+      })
+    })
 }
-
 </script>
 
 <style lang="scss" scoped>

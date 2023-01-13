@@ -8,6 +8,7 @@ import 'element-plus/dist/index.css'
 import '@/router/permission'
 import * as ELIcons from '@element-plus/icons-vue'
 import i18n from '@/i18n'
+// import 'element-plus/theme-chalk/index.css'
 
 const app = createApp(App)
 for (const iconName in ELIcons) {
