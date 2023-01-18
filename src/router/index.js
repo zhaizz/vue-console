@@ -6,12 +6,12 @@ const routes = [
     name: 'Login',
     component: () => import('../views/login')
   },
-  {
-    path: '/404',
-    name: '404',
-    meta: { id: 'error' },
-    component: () => import('@/views/error/index.vue')
-  },
+  // {
+  //   path: '/404',
+  //   name: '404',
+  //   meta: { id: 'error' },
+  //   component: () => import('@/views/error/index.vue')
+  // },
   {
     path: '/',
     name: '/',
@@ -25,12 +25,12 @@ const routes = [
         meta: { id: 'home' },
         component: () => import('@/views/home/index.vue')
       },
-      // {
-      //   path: 'error',
-      //   name: 'error',
-      //   meta: { id: 'error' },
-      //   component: () => import('@/views/error/index.vue')
-      // },
+      {
+        path: 'error',
+        name: 'error',
+        meta: { id: 'error' },
+        component: () => import('@/views/error/index.vue')
+      },
       {
         path: 'users',
         name: 'users',

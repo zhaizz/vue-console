@@ -53,11 +53,12 @@
       :total="total" />
   </div>
   <el-dialog v-model="userFormVisible" @open="resetAddForm">
-    <el-form :model="addUserForm" v-if="userFormVisible == true" label-position="right">
+    <el-form :model="addUserForm" v-if="userFormVisible == true" ref="editRef" label-position="right"
+      :rules="formRules">
       <el-row>
         <el-col :span="11">
-          <el-form-item label="用户名" style="margin-left: 10%">
-            <el-input v-model="addUserForm.username"></el-input>
+          <el-form-item label="用户名" style="margin-left: 10%" prop="username">
+            <el-input v-model="addUserForm.username" clearable></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="11">
@@ -136,6 +137,7 @@ import { ref } from 'vue'
 import { getUserList, addUser, delUser, editUser, addRole, changeStatus } from '@/api/user'
 import { getRoles } from '../../api/role'
 import { ElMessage, ElMessageBox } from 'element-plus'
+// import { trigger } from '@vue/reactivity';
 // import { Search, Edit, Delete } from '@element-plus/icons-vue'
 // Delete, Edit, Search, Share, Upload
 
@@ -222,19 +224,24 @@ const handleEdit = async () => {
   toggleEditFalse()
   userList()
 }
-
-const addUserFunc = async () => {
-  const user = await addUser(addUserForm.value)
-  // console.log(addUserForm.value.rid)
-  await addRole(user.id, { rid: addUserForm.value.rid })
-  await changeStatus(user.id, true)
-  ElMessage.success('用户添加成功')
-  userFormVisible.value = false
-  const rep = await getUserList({ pagenum: 1, pagesize: 10 })
-  tableData.value = rep.users
-  total.value = tableData.value.length
-  newsData.value = tableData.value.slice((pageNum.value - 1) * pageSize.value, pageNum.value * pageSize.value)
-  addUserForm.value = {}
+const editRef = ref()
+const addUserFunc = () => {
+  // const editRef = addUserForm
+  editRef.value.validate().then(async () => {
+    const user = await addUser(addUserForm.value)
+    // console.log(addUserForm.value.rid)
+    await addRole(user.id, { rid: addUserForm.value.rid })
+    await changeStatus(user.id, true)
+    ElMessage.success('用户添加成功')
+    userFormVisible.value = false
+    const rep = await getUserList({ pagenum: 1, pagesize: 10 })
+    tableData.value = rep.users
+    total.value = tableData.value.length
+    newsData.value = tableData.value.slice((pageNum.value - 1) * pageSize.value, pageNum.value * pageSize.value)
+    addUserForm.value = {}
+  }).catch(() => {
+    console.log('校验不通过')
+  })
 }
 
 function resetAddForm() {
@@ -322,7 +329,10 @@ function selectRole(rid) {
   console.log(rid)
   addUserForm.value.rid = rid
 }
-
+const formRules = {
+  username: [{ required: true, message: '输入用户名', trigger: 'blur' }],
+  password: [{ required: true, message: '输入密码', trigger: 'blur' }]
+}
 </script>
 
 <style lang="scss" scoped>
