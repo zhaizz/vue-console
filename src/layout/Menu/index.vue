@@ -24,6 +24,7 @@
 import { menuList } from '@/api/menu'
 import { ref } from 'vue'
 import variables from '@/styles/variables.scss'
+// import store from '../../store'
 
 const iconList = ref(['user', 'setting', 'shop', 'tickets', 'pie-chart'])
 const icon = ref('menu')
@@ -32,6 +33,24 @@ const defaultActive = ref(sessionStorage.getItem('path') || '/users')
 const menusList = ref([])
 const initMenusList = async () => {
   menusList.value = await menuList()
+  // console.log(s)
+  // if (store.getters.roleId === '0') {
+  //   menusList.value = s
+  // } else {
+  //   s.forEach(element => {
+  //     if (store.getters.menuList.includes(element.id)) {
+  //       if (element.children !== []) {
+  //         element.children.forEach((el, index) => {
+  //           if (!store.getters.menuList.includes(el.id)) {
+  //             element.children.splice(index, 1)
+  //           }
+  //         })
+  //         menusList.value.push(element)
+  //       }
+  //     }
+  //   })
+  // }
+  // console.log(menusList.value)
 }
 initMenusList()
 

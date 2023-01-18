@@ -1,7 +1,7 @@
-import request1 from './request'
+import request from './request'
 
 export const login = (data) => {
-  return request1({
+  return request({
     url: '/login',
     method: 'POST',
     data

@@ -35,13 +35,15 @@
   <div>
     <el-table :data="newsData" stripe style="width: 100%">
       <el-table-column prop="username" label="用户名" />
+      <el-table-column prop="role_name" label="角色" />
       <el-table-column prop="mobile" label="手机号" />
       <el-table-column prop="email" label="邮箱" />
+      <!-- <el-table-column prop="mg_state" label="状态">{{ scope.row.mg_state === true ? 1 : 2 }}</el-table-column> -->
+      <el-table-column prop="mg_state" :formatter="getStatus" label="状态"></el-table-column>
       <el-table-column label="Operations">
         <template #default="scope">
           <el-button size="small" @click="openEdit(scope.row.id, scope.row.email, scope.row.mobile)">Edit</el-button>
           <el-button size="small" text type="danger" @click="handleDelete(scope.row.id)">Delete</el-button>
-          <!-- <el-button size="small" type="danger" @click="console.log(scope.row)">Delete</el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -73,6 +75,14 @@
         <el-col :span="11">
           <el-form-item label="手机号" style="margin-left: 10%">
             <el-input v-model="addUserForm.mobile"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="11">
+          <el-form-item label="角&nbsp&nbsp&nbsp&nbsp色" style="margin-left: 10%">
+            <el-select v-model="addUserForm.rid" class="m-2" placeholder="Select" size="large" :placement="bottom"
+              @change="selectRole(addUserForm.rid)">
+              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>
@@ -123,7 +133,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import { getUserList, addUser, delUser, editUser } from '@/api/user'
+import { getUserList, addUser, delUser, editUser, addRole, changeStatus } from '@/api/user'
+import { getRoles } from '../../api/role'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
 
@@ -139,7 +150,7 @@ const userList = async () => {
   tableData.value = rep.users
   total.value = tableData.value.length
   newsData.value = tableData.value.slice((pageNum.value - 1) * pageSize.value, pageNum.value * pageSize.value)
-  console.log(newsData.value)
+  // console.log(newsData.value)
 }
 function handleSizeChange(size) {
   pageSize.value = size
@@ -155,8 +166,19 @@ const addUserForm = ref({
   username: '',
   password: '',
   email: '',
-  mobile: ''
+  role: '',
+  mobile: '',
+  mg_state: '',
+  status: '',
+  role_name: '',
+  rid: ''
 })
+
+function getStatus(row, column) {
+  return row.mg_state ? '启用' : '禁用'
+}
+
+// const status = addUserForm.value.mg_state
 const userFormVisible = ref(false)
 function toggleTrue() {
   userFormVisible.value = true
@@ -195,14 +217,17 @@ const handleEdit = async () => {
 }
 
 const addUserFunc = async () => {
-  await addUser(addUserForm.value)
+  const user = await addUser(addUserForm.value)
+  // console.log(addUserForm.value.rid)
+  await addRole(user.id, { rid: addUserForm.value.rid })
+  await changeStatus(user.id, true)
   ElMessage.success('用户添加成功')
-
   userFormVisible.value = false
   const rep = await getUserList({ pagenum: 1, pagesize: 10 })
   tableData.value = rep.users
   total.value = tableData.value.length
   newsData.value = tableData.value.slice((pageNum.value - 1) * pageSize.value, pageNum.value * pageSize.value)
+  addUserForm.value = {}
 }
 
 function resetForm() {
@@ -257,6 +282,29 @@ const handleDelete = (id) => {
       })
     })
 }
+
+// const value = ref('')
+
+const options = ref([{}])
+
+const getRoleList = async () => {
+  const rep = await getRoles()
+  rep.forEach(element => {
+    options.value.push({ value: element.id, label: element.roleName })
+  })
+  // console.log(options.value)
+}
+getRoleList()
+
+// const userAddRole = async () => {
+//   const rep = await addRole()
+// }
+// userAddRole()
+
+function selectRole(rid) {
+  addUserForm.value.rid = rid
+}
+
 </script>
 
 <style lang="scss" scoped>

@@ -31,3 +31,18 @@ export const editUser = (params, data) => {
 		data
 	})
 }
+
+export const addRole = (params, data) => {
+	return request({
+		url: '/users/' + params + '/role',
+		method: 'PUT',
+		data
+	})
+}
+
+export const changeStatus = (id, type) => {
+	return request({
+		url: '/users/' + id + '/state/' + type,
+		method: 'PUT'
+	})
+}
