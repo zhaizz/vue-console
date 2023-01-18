@@ -1,29 +1,29 @@
 <template>
-  <el-form :model="addUserForm">
+  <el-form :model="selectUserForm">
     <el-row>
       <el-col :span="3">
         <el-form-item label="用户名" style="margin-left: 5%">
-          <el-input v-model="addUserForm.username" placeholder="Please input" />
+          <el-input v-model="selectUserForm.username" placeholder="" />
         </el-form-item>
       </el-col>
       <el-col :span="3">
         <el-form-item label="邮箱" style="margin-left: 5%">
-          <el-input v-model="addUserForm.email" placeholder="Please input" />
+          <el-input v-model="selectUserForm.email" placeholder="" />
         </el-form-item>
       </el-col>
       <el-col :span="3">
         <el-form-item label="手机号" style="margin-left: 5%">
-          <el-input v-model="addUserForm.mobile" placeholder="Please input" />
+          <el-input v-model="selectUserForm.mobile" placeholder="" />
         </el-form-item>
       </el-col>
       <el-col :span="3">
         <el-form-item style="margin-left: 5%">
-          <el-button type="primary" :icon="Search" @click="search(addUserForm)">查询</el-button>
+          <el-button type="primary" @click="search(addUserForm)">查询</el-button>
         </el-form-item>
       </el-col>
       <el-col :span="3">
         <el-form-item style="margin-left: -50%">
-          <el-button type="primary" :icon="primary" @click="resetForm">重置</el-button>
+          <el-button type="primary" @click="resetSelectForm">重置</el-button>
         </el-form-item>
       </el-col>
     </el-row>
@@ -42,8 +42,8 @@
       <el-table-column prop="mg_state" :formatter="getStatus" label="状态"></el-table-column>
       <el-table-column label="Operations">
         <template #default="scope">
-          <el-button size="small" @click="openEdit(scope.row.id, scope.row.email, scope.row.mobile)">Edit</el-button>
-          <el-button size="small" text type="danger" @click="handleDelete(scope.row.id)">Delete</el-button>
+          <el-button size="small" @click="openEdit(scope.row.id, scope.row.email, scope.row.mobile)">编辑</el-button>
+          <el-button size="small" text type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -52,7 +52,7 @@
       layout="->, sizes, prev, pager, next" :page-sizes="pageSizes" :current-page="pageNum" :page-size="pageSize"
       :total="total" />
   </div>
-  <el-dialog v-model="userFormVisible" @open="resetForm">
+  <el-dialog v-model="userFormVisible" @open="resetAddForm">
     <el-form :model="addUserForm" v-if="userFormVisible == true" label-position="right">
       <el-row>
         <el-col :span="11">
@@ -79,7 +79,7 @@
         </el-col>
         <el-col :span="11">
           <el-form-item label="角&nbsp&nbsp&nbsp&nbsp色" style="margin-left: 10%">
-            <el-select v-model="addUserForm.rid" class="m-2" placeholder="Select" size="large" :placement="bottom"
+            <el-select v-model="addUserForm.rid" class="m-2" placeholder="Select" size="large" placement="bottom"
               @change="selectRole(addUserForm.rid)">
               <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
@@ -100,7 +100,7 @@
       </el-row>
     </el-form>
   </el-dialog>
-  <el-dialog v-model="userEditFormVisible" @open="resetForm">
+  <el-dialog v-model="userEditFormVisible" @open="resetAddForm">
     <el-form :model="editUserForm" v-if="userEditFormVisible == true" label-position="right">
       <el-row>
         <el-col :span="11">
@@ -122,7 +122,7 @@
         </el-col>
         <el-col :span="11">
           <el-form-item style="margin-left: 11%">
-            <el-button type="primary" @click="handleEdit()">Confirm</el-button>
+            <el-button type="Primary" @click="handleEdit()">Confirm</el-button>
           </el-form-item>
         </el-col>
       </el-row>
@@ -136,7 +136,8 @@ import { ref } from 'vue'
 import { getUserList, addUser, delUser, editUser, addRole, changeStatus } from '@/api/user'
 import { getRoles } from '../../api/role'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
+// import { Search, Edit, Delete } from '@element-plus/icons-vue'
+// Delete, Edit, Search, Share, Upload
 
 const pageNum = ref(1)
 const pageSize = ref(5)
@@ -172,6 +173,12 @@ const addUserForm = ref({
   status: '',
   role_name: '',
   rid: ''
+})
+
+const selectUserForm = ref({
+  username: '',
+  email: '',
+  mobile: ''
 })
 
 function getStatus(row, column) {
@@ -230,7 +237,7 @@ const addUserFunc = async () => {
   addUserForm.value = {}
 }
 
-function resetForm() {
+function resetAddForm() {
   addUserForm.value = {
     username: '',
     password: '',
@@ -245,18 +252,27 @@ function resetForm() {
   userList()
 }
 
+function resetSelectForm() {
+  selectUserForm.value = {
+    username: '',
+    email: '',
+    mobile: ''
+  }
+  userList()
+}
+
 function search() {
   newsData.value = []
   let s = tableData.value
-  if (addUserForm.value.username !== '') {
-    s = s.filter((t) => t.username === addUserForm.value.username)
+  if (selectUserForm.value.username !== '') {
+    s = s.filter((t) => t.username === selectUserForm.value.username)
   }
-  if (addUserForm.value.email !== '') {
-    s = s.filter((t) => t.email === addUserForm.value.email)
+  if (selectUserForm.value.email !== '') {
+    s = s.filter((t) => t.email === selectUserForm.value.email)
     console.log(addUserForm.value.email)
   }
-  if (addUserForm.value.mobile !== '') {
-    s = s.filter((t) => t.mobile === addUserForm.value.mobile)
+  if (selectUserForm.value.mobile !== '') {
+    s = s.filter((t) => t.mobile === selectUserForm.value.mobile)
   }
   newsData.value = s
 }
@@ -287,14 +303,13 @@ const handleDelete = (id) => {
 
 // const value = ref('')
 
-const options = ref([{}])
+const options = ref([])
 
 const getRoleList = async () => {
   const rep = await getRoles()
   rep.forEach(element => {
     options.value.push({ value: element.id, label: element.roleName })
   })
-  // console.log(options.value)
 }
 getRoleList()
 
@@ -304,6 +319,7 @@ getRoleList()
 // userAddRole()
 
 function selectRole(rid) {
+  console.log(rid)
   addUserForm.value.rid = rid
 }
 
