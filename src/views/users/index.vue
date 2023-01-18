@@ -231,7 +231,17 @@ const addUserFunc = async () => {
 }
 
 function resetForm() {
-  addUserForm.value = {}
+  addUserForm.value = {
+    username: '',
+    password: '',
+    email: '',
+    role: '',
+    mobile: '',
+    mg_state: '',
+    status: '',
+    role_name: '',
+    rid: ''
+  }
   userList()
 }
 
@@ -240,25 +250,17 @@ function search() {
   let s = tableData.value
   if (addUserForm.value.username !== '') {
     s = s.filter((t) => t.username === addUserForm.value.username)
-  } else if (addUserForm.value.email !== '') {
+  }
+  if (addUserForm.value.email !== '') {
     s = s.filter((t) => t.email === addUserForm.value.email)
-  } else if (addUserForm.value.mobile !== '') {
+    console.log(addUserForm.value.email)
+  }
+  if (addUserForm.value.mobile !== '') {
     s = s.filter((t) => t.mobile === addUserForm.value.mobile)
   }
   newsData.value = s
 }
 
-// const userList = async () => {
-//   const rep = await getUserList({ pagenum: 1, pagesize: 10 })
-//   tableData.value = rep.users
-//   total.value = tableData.value.length
-//   newsData.value = tableData.value.slice((pageNum.value - 1) * pageSize.value, pageNum.value * pageSize.value)
-//   console.log(newsData.value)
-// }
-
-// const handleDelete = (id) => {
-//   open(id)
-// }
 const handleDelete = (id) => {
   ElMessageBox.confirm(
     '确认删除该用户吗？',
