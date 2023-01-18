@@ -79,6 +79,7 @@ export default {
       commit('setMenuList', '')
       localStorage.clear()
       router.replace('/login')
+      sessionStorage.setItem('path', '')
     }
 
   }

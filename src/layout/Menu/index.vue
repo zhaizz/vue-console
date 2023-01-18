@@ -29,7 +29,8 @@ import variables from '@/styles/variables.scss'
 const iconList = ref(['user', 'setting', 'shop', 'tickets', 'pie-chart'])
 const icon = ref('menu')
 
-const defaultActive = ref(sessionStorage.getItem('path') || '/users')
+// const defaultActive = ref(sessionStorage.getItem('path') || '/users')
+const defaultActive = ref(sessionStorage.getItem('path'))
 const menusList = ref([])
 const initMenusList = async () => {
   menusList.value = await menuList()

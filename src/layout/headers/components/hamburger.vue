@@ -9,7 +9,7 @@ import { useStore } from 'vuex'
 import { computed } from 'vue'
 const store = useStore()
 const toggleClick = () => {
-  store.commit('app/changeSiderType')
+  store.commit('user/changeSiderType')
 }
 const icon = computed(() => {
   return store.getters.siderType ? 'hamburger-opened' : 'hamburger-closed'
