@@ -14,7 +14,7 @@ router.beforeEach((to, from, next) => {
       if (to.path === '/login') {
         next('/')
       }
-      console.log(to.meta.id)
+      // console.log(to.meta.id)
       if (store.getters.menuList.includes(to.meta.id)) {
         next()
       } else {

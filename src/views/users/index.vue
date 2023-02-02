@@ -40,9 +40,13 @@
       <el-table-column prop="email" label="邮箱" />
       <!-- <el-table-column prop="mg_state" label="状态">{{ scope.row.mg_state === true ? 1 : 2 }}</el-table-column> -->
       <el-table-column prop="mg_state" :formatter="getStatus" label="状态"></el-table-column>
-      <el-table-column label="Operations">
+      <el-table-column label="操作" min-width="90" align="center">
         <template #default="scope">
-          <el-button size="small" @click="openEdit(scope.row.id, scope.row.email, scope.row.mobile)">编辑</el-button>
+          <el-button size="small"
+            @click="openEdit(scope.row.id, scope.row.username, '******', scope.row.email, scope.row.mobile, scope.row.role_name)">编辑</el-button>
+          <el-button size="small" text type="warning" @click="changeUserStatus(scope.row.id, scope.row.mg_state)">{{
+            scope.row.mg_state ? '禁用' : '启用'
+          }}</el-button>
           <el-button size="small" text type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
@@ -52,81 +56,75 @@
       layout="->, sizes, prev, pager, next" :page-sizes="pageSizes" :current-page="pageNum" :page-size="pageSize"
       :total="total" />
   </div>
-  <el-dialog v-model="userFormVisible" @open="resetAddForm">
-    <el-form :model="addUserForm" v-if="userFormVisible == true" ref="editRef" label-position="right"
-      :rules="formRules">
-      <el-row>
-        <el-col :span="11">
-          <el-form-item label="用户名" style="margin-left: 10%" prop="username">
-            <el-input v-model="addUserForm.username" clearable></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="11">
-          <el-form-item label="密&nbsp&nbsp&nbsp&nbsp码" style="margin-left: 10%">
-            <el-input v-model="addUserForm.password"></el-input>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="11">
-          <el-form-item label="邮&nbsp&nbsp&nbsp&nbsp箱" style="margin-left: 10%">
-            <el-input v-model="addUserForm.email"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="11">
-          <el-form-item label="手机号" style="margin-left: 10%">
-            <el-input v-model="addUserForm.mobile"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="11">
-          <el-form-item label="角&nbsp&nbsp&nbsp&nbsp色" style="margin-left: 10%">
-            <el-select v-model="addUserForm.rid" class="m-2" placeholder="Select" size="large" placement="bottom"
-              @change="selectRole(addUserForm.rid)">
-              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="11">
-          <el-form-item style="margin-left: 82%">
-            <el-button @click="toggleFalse">Cancel</el-button>
-          </el-form-item>
-        </el-col>
-        <el-col :span="11">
-          <el-form-item style="margin-left: 11%">
-            <el-button type="primary" @click="addUserFunc">Confirm</el-button>
-          </el-form-item>
-        </el-col>
-      </el-row>
+  <el-dialog v-model="userFormVisible" @open="resetAddForm" width="35%" title="新增用户">
+    <el-form :model="addUserForm" v-if="userFormVisible == true" label-width="70px" ref="editRef" label-position="right"
+      :rules="formRules" :inline="true" class="demo-form-inline">
+
+      <el-form-item label="用户名" prop="username" style="margin-left: 3%">
+        <el-input v-model="addUserForm.username"></el-input>
+      </el-form-item>
+
+      <el-form-item label="密码" prop="password">
+        <el-input v-model="addUserForm.password"></el-input>
+      </el-form-item>
+
+      <el-form-item label="邮箱" style="margin-left: 3%">
+        <el-input v-model="addUserForm.email"></el-input>
+      </el-form-item>
+
+      <el-form-item label="手机号">
+        <el-input v-model="addUserForm.mobile"></el-input>
+      </el-form-item>
+
+      <el-form-item label="角色" prop="rid" style="margin-left: 3%">
+        <el-select v-model="addUserForm.rid" class="m-2" placeholder="Select" style="width:92%" placement="bottom"
+          @change="selectRole(addUserForm.rid)">
+          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item style="margin-left: 38%">
+        <el-button @click="toggleFalse">取消</el-button>
+        <el-button type="primary" @click="addUserFunc">确认</el-button>
+      </el-form-item>
+
     </el-form>
   </el-dialog>
-  <el-dialog v-model="userEditFormVisible" @open="resetAddForm">
-    <el-form :model="editUserForm" v-if="userEditFormVisible == true" label-position="right">
-      <el-row>
-        <el-col :span="11">
-          <el-form-item label="邮箱" style="margin-left: 10%">
-            <el-input v-model="editUserForm.email">{{ editUserForm.email }}</el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="11">
-          <el-form-item label="手机号" style="margin-left: 10%">
-            <el-input v-model="editUserForm.mobile">{{ editUserForm.mobile }}</el-input>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="11">
-          <el-form-item style="margin-left: 82%">
-            <el-button @click="toggleEditFalse">Cancel</el-button>
-          </el-form-item>
-        </el-col>
-        <el-col :span="11">
-          <el-form-item style="margin-left: 11%">
-            <el-button type="Primary" @click="handleEdit()">Confirm</el-button>
-          </el-form-item>
-        </el-col>
-      </el-row>
+  <el-dialog v-model="userEditFormVisible" @open="resetAddForm" width="35%" title="修改用户信息">
+    <el-form :model="editUserForm" v-if="userEditFormVisible == true" label-position="right" label-width="auto"
+      inline="true" class="demo-form-inline">
+      <el-form-item label="用户名">
+        <el-input v-model="editUserForm.username" :disabled=true />
+      </el-form-item>
+
+      <el-form-item label="密码">
+        <el-input v-model="editUserForm.password" :disabled=true />
+      </el-form-item>
+
+      <el-form-item label="邮箱">
+        <el-input v-model="editUserForm.email" />
+      </el-form-item>
+
+      <el-form-item label="手机号">
+        <el-input v-model="editUserForm.mobile" />
+      </el-form-item>
+
+      <el-form-item label="角色" prop="rid">
+        <el-select v-model="editUserForm.rid" class="m-2" placeholder="Select" style="width:92%" placement="bottom"
+          @change="selectRole(editUserForm.rid)">
+          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <!-- <el-form-item style="margin-left: 38%">
+          <el-button @click="toggleEditFalse">取消</el-button>
+          <el-button type="primary" @click="handleEdit()">确认</el-button>
+        </el-form-item> -->
+      </el-form-item>
+
+      <el-form-item style="margin-left: 38%">
+        <el-button @click="toggleEditFalse">取消</el-button>
+        <el-button type="primary" @click="handleEdit()">确认</el-button>
+      </el-form-item>
+
     </el-form>
   </el-dialog>
 
@@ -134,12 +132,9 @@
 
 <script setup>
 import { ref } from 'vue'
-import { getUserList, addUser, delUser, editUser, addRole, changeStatus } from '@/api/user'
+import { getUserList, addUser, delUser, editUser, addRole, changeStatus, getInfo } from '@/api/user'
 import { getRoles } from '../../api/role'
 import { ElMessage, ElMessageBox } from 'element-plus'
-// import { trigger } from '@vue/reactivity';
-// import { Search, Edit, Delete } from '@element-plus/icons-vue'
-// Delete, Edit, Search, Share, Upload
 
 const pageNum = ref(1)
 const pageSize = ref(5)
@@ -153,7 +148,6 @@ const userList = async () => {
   tableData.value = rep.users
   total.value = tableData.value.length
   newsData.value = tableData.value.slice((pageNum.value - 1) * pageSize.value, pageNum.value * pageSize.value)
-  // console.log(newsData.value)
 }
 function handleSizeChange(size) {
   pageSize.value = size
@@ -187,7 +181,6 @@ function getStatus(row, column) {
   return row.mg_state ? '启用' : '禁用'
 }
 
-// const status = addUserForm.value.mg_state
 const userFormVisible = ref(false)
 function toggleTrue() {
   userFormVisible.value = true
@@ -198,9 +191,15 @@ function toggleFalse() {
 }
 
 const editUserForm = ref({
-  id: '',
+  username: '',
+  password: '',
   email: '',
-  mobile: ''
+  role: '',
+  mobile: '',
+  mg_state: '',
+  status: '',
+  role_name: '',
+  rid: ''
 })
 const userEditFormVisible = ref(false)
 function toggleEditTrue() {
@@ -211,25 +210,36 @@ function toggleEditFalse() {
   userEditFormVisible.value = false
 }
 
-function openEdit(id, email, mobile) {
+function openEdit(id, username, password, email, mobile, role) {
   toggleEditTrue()
   editUserForm.value.id = id
+  editUserForm.value.rid = role
+  editUserForm.value.username = username
+  editUserForm.value.password = password
   editUserForm.value.email = email
   editUserForm.value.mobile = mobile
+  getUserInfo(id)
 }
-
+const getUserInfo = async (id) => {
+  const res = await getInfo(id)
+  editUserForm.value.role_name = res.rid
+  console.log(editUserForm.value.role_name)
+}
 const handleEdit = async () => {
-  await editUser(editUserForm.value.id, { email: editUserForm.value.email, mobile: editUserForm.value.mobile })
-  ElMessage.success('修改成功')
+  console.log(editUserForm.value.role_name)
+  await editUser(editUserForm.value.id, { email: editUserForm.value.email, mobile: editUserForm.value.mobile }).then(async () => {
+    await addRole(editUserForm.value.id, { rid: editUserForm.value.role_name }).then(() => {
+      ElMessage.success('修改用户信息成功')
+    })
+  })
+  // ElMessage.success('修改用户信息失败')
   toggleEditFalse()
   userList()
 }
 const editRef = ref()
 const addUserFunc = () => {
-  // const editRef = addUserForm
   editRef.value.validate().then(async () => {
     const user = await addUser(addUserForm.value)
-    // console.log(addUserForm.value.rid)
     await addRole(user.id, { rid: addUserForm.value.rid })
     await changeStatus(user.id, true)
     ElMessage.success('用户添加成功')
@@ -242,6 +252,11 @@ const addUserFunc = () => {
   }).catch(() => {
     console.log('校验不通过')
   })
+}
+
+const changeUserStatus = async (userId, status) => {
+  await changeStatus(userId, !status)
+  userList()
 }
 
 function resetAddForm() {
@@ -308,8 +323,6 @@ const handleDelete = (id) => {
     })
 }
 
-// const value = ref('')
-
 const options = ref([])
 
 const getRoleList = async () => {
@@ -320,18 +333,16 @@ const getRoleList = async () => {
 }
 getRoleList()
 
-// const userAddRole = async () => {
-//   const rep = await addRole()
-// }
-// userAddRole()
-
 function selectRole(rid) {
   console.log(rid)
   addUserForm.value.rid = rid
+  editUserForm.value.role_name = rid
+  console.log(rid)
 }
 const formRules = {
-  username: [{ required: true, message: '输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '输入密码', trigger: 'blur' }]
+  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+  rid: [{ required: true, message: '请选择角色', trigger: 'change' }]
 }
 </script>
 

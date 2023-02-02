@@ -6,12 +6,6 @@ const routes = [
     name: 'Login',
     component: () => import('../views/login')
   },
-  // {
-  //   path: '/404',
-  //   name: '404',
-  //   meta: { id: 'error' },
-  //   component: () => import('@/views/error/index.vue')
-  // },
   {
     path: '/',
     name: '/',

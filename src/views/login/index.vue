@@ -52,7 +52,6 @@ const handleLogin = () => {
     if (valid) {
       store.dispatch('user/login', form.value)
     } else {
-      // console.log('error submit!!')
       return false
     }
   })
@@ -103,7 +102,6 @@ $cursor: #fff;
       input {
         background: transparent;
         border: 0px;
-        // -webkit-appearance: none;
         border-radius: 0px;
         padding: 12px 5px 12px 15px;
         color: $light_gray;
@@ -162,9 +160,6 @@ $cursor: #fff;
   }
 
   .show-pwd {
-    // position: absolute;
-    // right: 10px;
-    // top: 7px;
     font-size: 16px;
     color: $dark_gray;
     cursor: pointer;

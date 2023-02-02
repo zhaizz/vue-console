@@ -20,7 +20,6 @@ export const delUser = (params) => {
 	return request({
 		url: '/users/' + params,
 		method: 'DELETE'
-		// params
 	})
 }
 
@@ -44,5 +43,12 @@ export const changeStatus = (id, type) => {
 	return request({
 		url: '/users/' + id + '/state/' + type,
 		method: 'PUT'
+	})
+}
+
+export const getInfo = (id) => {
+	return request({
+		url: '/users/' + id,
+		method: 'GET'
 	})
 }

@@ -40,7 +40,6 @@ export default {
         loginApi(userInfo)
           .then((res) => {
             getRoles().then((result) => {
-              // console.log('getRoles')
               const menuList = ref(['init', 'home', 'login', 'error'])
               result.forEach(element => {
                 if (res.rid === element.id) {
@@ -52,19 +51,13 @@ export default {
                   })
                 }
               })
-              console.log(menuList.value)
+              // console.log(menuList.value)
               commit('setMenuList', menuList.value)
               router.replace('/')
             })
             commit('setToken', res.token)
             commit('setRole', res.rid.toString())
-            // console.log(res.token)
-            // const getRoles1 = () => {
-            //   return getRoles()
-            // }
             setTokenTime()
-            // console.log('/')
-            // router.replace('/')
             resolve()
           })
           .catch((err) => {

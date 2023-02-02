@@ -27,25 +27,13 @@ service.interceptors.response.use(
   (response) => {
     const { data, meta } = response.data
     if (meta.status === 200 || meta.status === 201) {
-      // ElMessage.success(meta.msg)
       return data
     } else {
       ElMessage.error(meta.msg)
       return Promise.reject(new Error(meta.msg))
     }
-
-    // const meta = response.data.meta
-    // console.log(meta)
-    // if (meta.status === 200 || meta.status === 201) {
-    //   return response
-    // } else {
-    //   console.log(meta.status)
-    //   ElMessage.error(meta.msg)
-    // return Promise.reject(new Error(meta.msg))
-    // }
   },
   (error) => {
-    // console.log(error.response)
     error.response && ElMessage.error(error.response.data)
     return Promise.reject(new Error(error.response.data))
   }
